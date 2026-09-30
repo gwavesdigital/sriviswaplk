@@ -1,18 +1,33 @@
-# Sri Viswa EM School – Palakollu | School Connect
+# Sri Viswa School | E-Diary & Announcement System
 
-Bilingual school website with **Teacher Portal**, **Principal Desk** (password-protected) and **Parent Zone**.
+A Progressive Web App (PWA) for Sri Viswa EM School, Palakollu.
 
----
+## Features
 
-## 🚀 Deploy on GitHub Pages
+- 📔 **Teacher Desk** — E-Diary with class-based subjects, announcements
+- 🏢 **Office Desk** — School-wide & class announcements
+- 👑 **Principal Desk** — Approval workflow, WhatsApp share, PNG reports
+- 📲 **Installable PWA** — Works offline, add to home screen
+- ☁️ **Real-time sync** via Firebase
+- 📄 **PNG report generation** for approved entries
 
-1. Create a **public** GitHub repo (e.g., `sri-viswa-em-school`)
-2. Upload all files preserving the folder structure (see below)
-3. Go to **Settings → Pages**
-4. Source: **Deploy from a branch** → Branch: **main** → Folder: **/ (root)**
-5. Click **Save** → wait 1–2 minutes
-6. Live URL: `https://your-username.github.io/sri-viswa-em-school/`
+## Live
 
----
+https://gwavesdigital.github.io/sriviswaplk/
 
-## 📁 Required Folder Structure
+## Tech Stack
+
+- HTML / CSS / JavaScript (single-page app)
+- Firebase Realtime Database + Anonymous Auth
+- Service Worker for offline support
+
+## Credits
+
+Designed & maintained by **Team @Valiass**
+📞 +91 8985361991
+
+## Security
+
+- Teacher password: `sriviswa`
+- Office password: `viswa school`
+- Principal password: `2026`
