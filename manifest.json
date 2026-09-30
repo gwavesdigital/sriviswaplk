@@ -2,34 +2,47 @@
   "name": "Sri Viswa School | E-Diary & Announcement System",
   "short_name": "Sri Viswa",
   "description": "Sri Viswa School, Palakollu - E-Diary & Announcement System",
-  "start_url": "/sriviswaplk/",
-  "scope": "/sriviswaplk/",
-  "id": "/sriviswaplk/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#F4F8FC",
   "theme_color": "#002B4A",
   "lang": "en",
   "dir": "ltr",
-  "categories": ["education", "productivity"],
+  "categories": ["education", "school", "productivity"],
   "icons": [
     {
-      "src": "/sriviswaplk/assets/logo.png",
+      "src": "./assets/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/sriviswaplk/assets/logo.png",
+      "src": "./assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./assets/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/sriviswaplk/assets/logo.png",
+      "src": "./assets/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "School Connect",
+      "short_name": "Connect",
+      "url": "./index.html",
+      "icons": [{ "src": "./assets/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
