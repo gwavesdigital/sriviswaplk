@@ -1,72 +1,89 @@
-const CACHE_NAME = "sriviswa-v1";
+/* ============================================================
+   Sri Viswa School – Service Worker
+   Network-first with cache fallback
+============================================================ */
 
-const PRECACHE_URLS = [
-  "/sriviswaplk/",
-  "/sriviswaplk/index.html",
-  "/sriviswaplk/manifest.json",
-  "/sriviswaplk/assets/logo.png"
+const CACHE_NAME = "sriviswa-v3";
+
+const CORE_ASSETS = [
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "./assets/logo.png",
+  "./assets/favicon.png",
+  "./assets/icons/icon-192.png",
+  "./assets/icons/icon-512.png"
 ];
 
-self.addEventListener("install", (event) => {
+/* INSTALL — pre-cache core assets */
+self.addEventListener("install", event => {
+  console.log("[SW] Installing…");
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return Promise.all(
-        PRECACHE_URLS.map((url) =>
-          cache.add(url).catch((err) => {
-            console.warn("[SW] Failed to precache:", url, err);
-          })
-        )
-      );
-    }).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME)
+      .then(cache => Promise.all(
+        CORE_ASSETS.map(url => cache.add(url).catch(() => {
+          console.warn("[SW] Failed to precache:", url);
+        }))
+      ))
+      .then(() => self.skipWaiting())
   );
 });
 
-self.addEventListener("activate", (event) => {
+/* ACTIVATE — clean up old caches */
+self.addEventListener("activate", event => {
+  console.log("[SW] Activating…");
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) return caches.delete(key);
+    caches.keys()
+      .then(keys => Promise.all(
+        keys.filter(k => k !== CACHE_NAME).map(k => {
+          console.log("[SW] Deleting old cache:", k);
+          return caches.delete(k);
         })
-      )
-    ).then(() => self.clients.claim())
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
-self.addEventListener("fetch", (event) => {
+/* FETCH — network-first, cache fallback */
+self.addEventListener("fetch", event => {
   const req = event.request;
   if (req.method !== "GET") return;
 
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
+  /* Navigation requests — network first, fallback to cached index */
+  if (req.mode === "navigate") {
+    event.respondWith(
+      fetch(req)
+        .then(res => {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then(c => c.put(req, copy)).catch(() => {});
+          return res;
+        })
+        .catch(() => caches.match("./index.html"))
+    );
+    return;
+  }
+
+  /* Other requests — cache first, then network */
   event.respondWith(
-    fetch(req)
-      .then((response) => {
-        if (response && response.status === 200 && response.type === "basic") {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(req, clone).catch(() => {});
-          });
+    caches.match(req).then(cached => {
+      if (cached) return cached;
+      return fetch(req).then(res => {
+        if (res && res.status === 200 && res.type === "basic") {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then(c => c.put(req, copy)).catch(() => {});
         }
-        return response;
-      })
-      .catch(() => {
-        return caches.match(req).then((cached) => {
-          if (cached) return cached;
-          if (req.mode === "navigate") {
-            return caches.match("/sriviswaplk/index.html");
-          }
-          return new Response("Offline", {
-            status: 503,
-            statusText: "Offline",
-            headers: { "Content-Type": "text/plain" }
-          });
-        });
-      })
+        return res;
+      }).catch(() => {
+        if (req.destination === "image") return caches.match("./assets/logo.png");
+      });
+    })
   );
 });
 
-self.addEventListener("message", (event) => {
+/* MESSAGE — allow manual skip waiting */
+self.addEventListener("message", event => {
   if (event.data === "SKIP_WAITING") self.skipWaiting();
 });
